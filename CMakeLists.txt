@@ -34,6 +34,7 @@ set_target_properties(
 
 set(PROJ_HEADER_DIRECTORIES 
     ${PROJ_FOLDER}
+    ${PROJ_FOLDER}/backends
     ${PROJ_FOLDER}/../../xgl/inc
     ${PROJ_FOLDER}/../../3rdParty/glfw/include
 )
