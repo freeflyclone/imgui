@@ -17,9 +17,10 @@ set(SOURCES
     ${PROJ_FOLDER}/imgui.cpp
     ${PROJ_FOLDER}/imgui_demo.cpp
     ${PROJ_FOLDER}/imgui_draw.cpp
+    ${PROJ_FOLDER}/imgui_tables.cpp
     ${PROJ_FOLDER}/imgui_widgets.cpp
-    ${PROJ_FOLDER}/examples/imgui_impl_opengl3.cpp
-    ${PROJ_FOLDER}/examples/imgui_impl_glfw.cpp
+    ${PROJ_FOLDER}/backends/imgui_impl_opengl3.cpp
+    ${PROJ_FOLDER}/backends/imgui_impl_glfw.cpp
 )
 
 add_library(${PROJ_NAME} ${SOURCES} ${HEADERS})
