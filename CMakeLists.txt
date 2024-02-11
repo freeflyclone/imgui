@@ -1,4 +1,3 @@
-message("Inside imgui/CMakeLists.txt")
 project(imgui)
 
 set(PROJ_NAME imgui)
