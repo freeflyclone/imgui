@@ -1,4 +1,4 @@
-// dear imgui, v1.90.1 WIP
+// dear imgui, v1.90.2
 // (demo code)
 
 // Help:
@@ -478,10 +478,12 @@ void ImGui::ShowDemoWindow(bool* p_open)
             ImGui::Text("Also see Style->Rendering for rendering options.");
 
             ImGui::SeparatorText("Debug");
+            ImGui::Checkbox("io.ConfigDebugIsDebuggerPresent", &io.ConfigDebugIsDebuggerPresent);
+            ImGui::SameLine(); HelpMarker("Enable various tools calling IM_DEBUG_BREAK().\n\nRequires a debugger being attached, otherwise IM_DEBUG_BREAK() options will appear to crash your application.");
             ImGui::BeginDisabled();
             ImGui::Checkbox("io.ConfigDebugBeginReturnValueOnce", &io.ConfigDebugBeginReturnValueOnce); // .
             ImGui::EndDisabled();
-            ImGui::SameLine(); HelpMarker("First calls to Begin()/BeginChild() will return false.\n\nTHIS OPTION IS DISABLED because it needs to be set at application boot-time to make sense. Showing the disabled option is a way to make this feature easier to discover");
+            ImGui::SameLine(); HelpMarker("First calls to Begin()/BeginChild() will return false.\n\nTHIS OPTION IS DISABLED because it needs to be set at application boot-time to make sense. Showing the disabled option is a way to make this feature easier to discover.");
             ImGui::Checkbox("io.ConfigDebugBeginReturnValueLoop", &io.ConfigDebugBeginReturnValueLoop);
             ImGui::SameLine(); HelpMarker("Some calls to Begin()/BeginChild() will return false.\n\nWill cycle through window depths then repeat. Windows should be flickering while running.");
             ImGui::Checkbox("io.ConfigDebugIgnoreFocusLoss", &io.ConfigDebugIgnoreFocusLoss);
@@ -6685,10 +6687,12 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
                 if (!filter.PassFilter(name))
                     continue;
                 ImGui::PushID(i);
+#ifndef IMGUI_DISABLE_DEBUG_TOOLS
                 if (ImGui::Button("?"))
                     ImGui::DebugFlashStyleColor((ImGuiCol)i);
                 ImGui::SetItemTooltip("Flash given color to identify places where it is used.");
                 ImGui::SameLine();
+#endif
                 ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
                 if (memcmp(&style.Colors[i], &ref->Colors[i], sizeof(ImVec4)) != 0)
                 {
@@ -6993,19 +6997,19 @@ struct ExampleAppConsole
     {
         ClearLog();
         for (int i = 0; i < History.Size; i++)
-            free(History[i]);
+            ImGui::MemFree(History[i]);
     }
 
     // Portable helpers
     static int   Stricmp(const char* s1, const char* s2)         { int d; while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; } return d; }
     static int   Strnicmp(const char* s1, const char* s2, int n) { int d = 0; while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; n--; } return d; }
-    static char* Strdup(const char* s)                           { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = malloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
+    static char* Strdup(const char* s)                           { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = ImGui::MemAlloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
     static void  Strtrim(char* s)                                { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
     void    ClearLog()
     {
         for (int i = 0; i < Items.Size; i++)
-            free(Items[i]);
+            ImGui::MemFree(Items[i]);
         Items.clear();
     }
 
@@ -7171,7 +7175,7 @@ struct ExampleAppConsole
         for (int i = History.Size - 1; i >= 0; i--)
             if (Stricmp(History[i], command_line) == 0)
             {
-                free(History[i]);
+                ImGui::MemFree(History[i]);
                 History.erase(History.begin() + i);
                 break;
             }
